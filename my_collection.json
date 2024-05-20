@@ -1,0 +1,1060 @@
+{
+	"info": {
+		"_postman_id": "2ad5d6bd-efc3-4761-85c1-c30bf4e88c6d",
+		"name": "Smart Cart API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30113948",
+		"_collection_link": "https://planetary-zodiac-234527.postman.co/workspace/Techfox~b0f48b59-7dec-4311-8707-ac10c41ef397/collection/29627234-2ad5d6bd-efc3-4761-85c1-c30bf4e88c6d?action=share&source=collection_link&creator=30113948"
+	},
+	"item": [
+		{
+			"name": "Get Token",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify response structure for status 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    // Check individual properties of the response body against the expected structure\r",
+							"    pm.expect(responseBody.token).to.be.a('string');\r",
+							"    pm.expect(responseBody.creationDateTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}\\+\\d{2}:\\d{2}$/);\r",
+							"    pm.expect(responseBody.expirationDateTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}\\+\\d{2}:\\d{2}$/);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify response structure for status 422\", function () {\r",
+							"    pm.response.to.have.status(422);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    // Define expected structure\r",
+							"    pm.expect(responseBody.detail).to.satisfy((array) => {\r",
+							"        if (!Array.isArray(array)) {\r",
+							"            return false;\r",
+							"        }\r",
+							"        return array.every(item => typeof item === 'object' &&\r",
+							"            item.loc && Array.isArray(item.loc) && item.loc.length === 2 &&\r",
+							"            typeof item.loc[0] === 'string' && typeof item.loc[1] === 'string' &&\r",
+							"            typeof item.msg === 'string' &&\r",
+							"            typeof item.type === 'string');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"str\",\n  \"password\": \"str\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseUrl}}/get_token"
+			},
+			"response": [
+				{
+					"name": "Successful Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"user1\",\n  \"password\": \"1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/get_token"
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"token\": \"<string>\",\n  \"creationDateTime\": \"<dateTime>\",\n  \"expirationDateTime\": \"<dateTime>\"\n}"
+				},
+				{
+					"name": "Validation Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"user2\",\n  \"password\": \"2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/get_token"
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Request Compartment Authorization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify response structure for status 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseBody.dateTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}\\+\\d{2}:\\d{2}$/);\r",
+							"    pm.expect(responseBody.cartId).to.be.a('string');\r",
+							"    pm.expect(responseBody.cardId).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify response structure for status 422\", function () {\r",
+							"    pm.response.to.have.status(422);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    // Define expected structure\r",
+							"    pm.expect(responseBody.detail).to.satisfy((array) => {\r",
+							"        if (!Array.isArray(array)) {\r",
+							"            return false;\r",
+							"        }\r",
+							"        return array.every(item => typeof item === 'object' &&\r",
+							"            item.loc && Array.isArray(item.loc) && item.loc.length === 2 &&\r",
+							"            typeof item.loc[0] === 'string' && typeof item.loc[1] === 'string' &&\r",
+							"            typeof item.msg === 'string' &&\r",
+							"            typeof item.type === 'string');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "<string>",
+						"description": "(Required) "
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"dateTime\": \"2023-04-25T11:58:21.3666355+08:00\",\n  \"cartId\": \"<string>\",\n  \"cardId\": \"<string>\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseUrl}}/compartment_authorization"
+			},
+			"response": [
+				{
+					"name": "Successful Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dateTime\": \"<dateTime>\",\n  \"cartId\": \"<string>\",\n  \"cardId\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/compartment_authorization"
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"dateTime\": \"<dateTime>\",\n  \"cartId\": \"<string>\",\n  \"cardId\": \"<string>\"\n}"
+				},
+				{
+					"name": "Validation Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dateTime\": \"<dateTime>\",\n  \"cartId\": \"<string>\",\n  \"cardId\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/compartment_authorization"
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Update Cart Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify response structure for status 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseBody.dateTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}\\+\\d{2}:\\d{2}$/);\r",
+							"    pm.expect(responseBody.cartId).to.be.a('string');\r",
+							"    pm.expect(responseBody.batteryPercentage).to.be.a('number');\r",
+							"    pm.expect(responseBody.compartments).to.be.an('array').and.to.satisfy((array) => {\r",
+							"        return array.every(compartment => {\r",
+							"            return typeof compartment === 'object' &&\r",
+							"                compartment.hasOwnProperty('name') && typeof compartment.name === 'string' &&\r",
+							"                compartment.hasOwnProperty('isOpen') && typeof compartment.isOpen === 'boolean' &&\r",
+							"                compartment.hasOwnProperty('isEmpty') && typeof compartment.isEmpty === 'boolean';\r",
+							"        });\r",
+							"    });\r",
+							"    pm.expect(responseBody.errorState).to.satisfy((errorState) => {\r",
+							"        return !errorState || (typeof errorState === 'object' && \r",
+							"            errorState.hasOwnProperty('code') && typeof errorState.code === 'number' &&\r",
+							"            errorState.hasOwnProperty('message') && typeof errorState.message === 'string');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify response structure for status 422\", function () {\r",
+							"    pm.response.to.have.status(422);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    // Define expected structure\r",
+							"    pm.expect(responseBody.detail).to.satisfy((array) => {\r",
+							"        if (!Array.isArray(array)) {\r",
+							"            return false;\r",
+							"        }\r",
+							"        return array.every(item => typeof item === 'object' &&\r",
+							"            item.loc && Array.isArray(item.loc) && item.loc.length === 2 &&\r",
+							"            typeof item.loc[0] === 'string' && typeof item.loc[1] === 'string' &&\r",
+							"            typeof item.msg === 'string' &&\r",
+							"            typeof item.type === 'string');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "<string>",
+						"description": "(Required) "
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"dateTime\": \"2023-04-25T11:58:21.3666355+08:00\",\n  \"cartId\": \"test\",\n  \"batteryPercentage\": 0,\n  \"compartments\": [\n    {\n      \"name\": \"upper\",\n      \"isOpen\": true,\n      \"isEmpty\": true\n    },\n    {\n      \"name\": \"bottom\",\n      \"isOpen\": true,\n      \"isEmpty\": true\n    }\n  ],\n  \"errorState\": {\n    \"code\": 0,\n    \"message\": \"<string>\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseUrl}}/cart_status_update"
+			},
+			"response": [
+				{
+					"name": "Successful Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dateTime\": \"<dateTime>\",\n  \"cartId\": \"<string>\",\n  \"batteryPercentage\": \"<integer>\",\n  \"compartments\": [\n    {\n      \"name\": \"<string>\",\n      \"isOpen\": \"<boolean>\",\n      \"isEmpty\": \"<boolean>\"\n    },\n    {\n      \"name\": \"<string>\",\n      \"isOpen\": \"<boolean>\",\n      \"isEmpty\": \"<boolean>\"\n    }\n  ],\n  \"errorState\": {\n    \"code\": \"<integer>\",\n    \"message\": \"<string>\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/cart_status_update"
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"dateTime\": \"<dateTime>\",\n  \"cartId\": \"<string>\",\n  \"batteryPercentage\": \"<integer>\",\n  \"compartments\": [\n    {\n      \"name\": \"<string>\",\n      \"isOpen\": \"<boolean>\",\n      \"isEmpty\": \"<boolean>\"\n    },\n    {\n      \"name\": \"<string>\",\n      \"isOpen\": \"<boolean>\",\n      \"isEmpty\": \"<boolean>\"\n    }\n  ],\n  \"errorState\": {\n    \"code\": \"<integer>\",\n    \"message\": \"<string>\"\n  }\n}"
+				},
+				{
+					"name": "Validation Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dateTime\": \"<dateTime>\",\n  \"cartId\": \"<string>\",\n  \"batteryPercentage\": \"<integer>\",\n  \"compartments\": [\n    {\n      \"name\": \"<string>\",\n      \"isOpen\": \"<boolean>\",\n      \"isEmpty\": \"<boolean>\"\n    },\n    {\n      \"name\": \"<string>\",\n      \"isOpen\": \"<boolean>\",\n      \"isEmpty\": \"<boolean>\"\n    }\n  ],\n  \"errorState\": {\n    \"code\": \"<integer>\",\n    \"message\": \"<string>\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/cart_status_update"
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Handle Destination Complete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify response structure for status 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var responseBody = pm.response.text();\r",
+							"\r",
+							"    // Check if response body is a string\r",
+							"    pm.expect(responseBody).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify response structure for status 422\", function () {\r",
+							"    pm.response.to.have.status(422);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    // Define expected structure\r",
+							"    pm.expect(responseBody.detail).to.satisfy((array) => {\r",
+							"        if (!Array.isArray(array)) {\r",
+							"            return false;\r",
+							"        }\r",
+							"        return array.every(item => typeof item === 'object' &&\r",
+							"            item.loc && Array.isArray(item.loc) && item.loc.length === 2 &&\r",
+							"            typeof item.loc[0] === 'string' && typeof item.loc[1] === 'string' &&\r",
+							"            typeof item.msg === 'string' &&\r",
+							"            typeof item.type === 'string');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "<string>",
+						"description": "(Required) "
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"dateTime\": \"2023-04-25T11:58:21.3666355+08:00\",\n  \"cartId\": \"<string>\",\n  \"completedDestination\": \"<string>\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseUrl}}/destination_complete"
+			},
+			"response": [
+				{
+					"name": "Successful Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dateTime\": \"<dateTime>\",\n  \"cartId\": \"<string>\",\n  \"completedDestination\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/destination_complete"
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "\"string\""
+				},
+				{
+					"name": "Validation Error",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dateTime\": \"<dateTime>\",\n  \"cartId\": \"<string>\",\n  \"completedDestination\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/destination_complete"
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify response structure for status 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    // Check robotId\r",
+							"    pm.expect(responseBody.robotId).to.be.a('string');\r",
+							"\r",
+							"    // Check batteryPercentage\r",
+							"    pm.expect(responseBody.batteryPercentage).to.be.a('number');\r",
+							"\r",
+							"    // Check robotState\r",
+							"    pm.expect(responseBody.robotState).to.be.oneOf([\"uninitialized\", \"offline\", \"shutdown\", \"idle\", \"charging\", \"working\", \"error\"]);\r",
+							"\r",
+							"    // Check currentLocation\r",
+							"    if (responseBody.currentLocation !== null) {\r",
+							"        pm.expect(responseBody.currentLocation).to.be.an('object');\r",
+							"        pm.expect(responseBody.currentLocation.name).to.be.a('string');\r",
+							"        pm.expect(responseBody.currentLocation.compartment).to.be.a('string');\r",
+							"    }\r",
+							"\r",
+							"    // Check travellingTo\r",
+							"    if (responseBody.travellingTo !== null) {\r",
+							"        pm.expect(responseBody.travellingTo).to.be.an('object');\r",
+							"        pm.expect(responseBody.travellingTo.name).to.be.a('string');\r",
+							"        pm.expect(responseBody.travellingTo.compartment).to.be.a('string');\r",
+							"    }\r",
+							"\r",
+							"\r",
+							"    // Check task\r",
+							"    if (responseBody.task !== null) {\r",
+							"        pm.expect(responseBody.task).to.be.an('object');\r",
+							"        pm.expect(responseBody.task.taskId).to.be.a('string');\r",
+							"        pm.expect(responseBody.task.dateTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}$/);\r",
+							"        pm.expect(responseBody.task.robotId).to.be.a('string');\r",
+							"        pm.expect(responseBody.task.fleetId).to.be.a('string');\r",
+							"        pm.expect(responseBody.task.cartId).to.be.a('string');\r",
+							"\r",
+							"        // Check destinations array\r",
+							"        pm.expect(responseBody.task.destinations).to.be.an('array');\r",
+							"        responseBody.task.destinations.forEach(destination => {\r",
+							"            pm.expect(destination).to.be.an('object');\r",
+							"            pm.expect(destination.name).to.be.a('string');\r",
+							"            pm.expect(destination.action).to.be.a('string');\r",
+							"            pm.expect(destination.compartment).to.be.a('string');\r",
+							"        });\r",
+							"\r",
+							"        // Check currentLocationIndex\r",
+							"        pm.expect(responseBody.task.currentLocationIndex).to.be.a('number');\r",
+							"\r",
+							"        // Check authorizedDepartures array\r",
+							"        pm.expect(responseBody.task.authorizedDepartures).to.be.an('array');\r",
+							"        responseBody.task.authorizedDepartures.forEach(departure => {\r",
+							"            pm.expect(departure).to.be.a('string');\r",
+							"        });\r",
+							"\r",
+							"        // Check unauthorizedDepartures array\r",
+							"        pm.expect(responseBody.task.unauthorizedDepartures).to.be.an('array');\r",
+							"        responseBody.task.unauthorizedDepartures.forEach(departure => {\r",
+							"            pm.expect(departure).to.be.a('string');\r",
+							"        });\r",
+							"\r",
+							"        // Check status\r",
+							"        pm.expect(responseBody.task.status).to.be.oneOf([\"uninitialized\", \"blocked\", \"error\", \"failed\", \"queued\", \"standby\", \"underway\", \"delayed\", \"skipped\", \"canceled\", \"killed\", \"completed\"]);\r",
+							"\r",
+							"        // Check travellingToIndex\r",
+							"        pm.expect(responseBody.task.travellingToIndex).to.satisfy((value) => {\r",
+							"        return value === null || typeof value === 'number';\r",
+							"        });\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify response structure for status 422\", function () {\r",
+							"    pm.response.to.have.status(422);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    // Define expected structure\r",
+							"    pm.expect(responseBody.detail).to.satisfy((array) => {\r",
+							"        if (!Array.isArray(array)) {\r",
+							"            return false;\r",
+							"        }\r",
+							"        return array.every(item => typeof item === 'object' &&\r",
+							"            item.loc && Array.isArray(item.loc) && item.loc.length === 2 &&\r",
+							"            typeof item.loc[0] === 'string' && typeof item.loc[1] === 'string' &&\r",
+							"            typeof item.msg === 'string' &&\r",
+							"            typeof item.type === 'string');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "<string>",
+						"description": "(Required) "
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/robot_status/:robot_id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"robot_status",
+						":robot_id"
+					],
+					"variable": [
+						{
+							"key": "robot_id",
+							"value": "<string>",
+							"description": "(Required) "
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Successful Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/robot_status/:robot_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"robot_status",
+								":robot_id"
+							],
+							"variable": [
+								{
+									"key": "robot_id",
+									"value": "<string>",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"dateTime\": \"<dateTime>\",\n  \"robotId\": \"<string>\",\n  \"batteryPercentage\": \"<integer>\",\n  \"robotState\": \"<string>\",\n  \"currentLocation\": {\n    \"name\": \"<string>\",\n    \"compartment\": \"<string>\"\n  },\n  \"travellingTo\": {\n    \"name\": \"<string>\",\n    \"compartment\": \"<string>\"\n  },\n  \"task\": {\n    \"taskId\": \"<string>\",\n    \"dateTime\": \"<dateTime>\",\n    \"robotId\": \"<string>\",\n    \"fleetId\": \"<string>\",\n    \"cartId\": \"<string>\",\n    \"destinations\": [\n      {\n        \"name\": \"<string>\",\n        \"action\": \"<string>\",\n        \"compartment\": \"<string>\"\n      },\n      {\n        \"name\": \"<string>\",\n        \"action\": \"<string>\",\n        \"compartment\": \"<string>\"\n      }\n    ],\n    \"currentLocationIndex\": \"<integer>\",\n    \"authorizedDepartures\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"unauthorizedDepartures\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"status\": \"<string>\",\n    \"travellingToIndex\": \"<integer>\"\n  }\n}"
+				},
+				{
+					"name": "Validation Error",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/robot_status/:robot_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"robot_status",
+								":robot_id"
+							],
+							"variable": [
+								{
+									"key": "robot_id",
+									"value": "<string>",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Retrieve Task Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify response body for status 200\", function () {\r",
+							"    // Check if response status is 200\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    // Check data types and structures of each key in the response body\r",
+							"    pm.expect(responseBody.taskId).to.be.a('string');\r",
+							"    pm.expect(responseBody.dateTime).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}$/);\r",
+							"    pm.expect(responseBody.robotId).to.be.a('string');\r",
+							"    pm.expect(responseBody.fleetId).to.be.a('string');\r",
+							"    pm.expect(responseBody.cartId).to.be.a('string');\r",
+							"\r",
+							"    // Check destinations array\r",
+							"    pm.expect(responseBody.destinations).to.be.an('array');\r",
+							"    responseBody.destinations.forEach(destination => {\r",
+							"        pm.expect(destination).to.have.property('name').that.is.a('string');\r",
+							"        pm.expect(destination).to.have.property('action').that.is.a('string');\r",
+							"        pm.expect(destination).to.have.property('compartment').that.is.a('string');\r",
+							"    });\r",
+							"\r",
+							"    // Check authorizedDepartures array\r",
+							"    pm.expect(responseBody.authorizedDepartures).to.be.an('array').and.to.satisfy((array) => {\r",
+							"        return array.every(item => typeof item === 'string');\r",
+							"    });\r",
+							"\r",
+							"    // Check unauthorizedDepartures array\r",
+							"    pm.expect(responseBody.unauthorizedDepartures).to.be.an('array').and.to.satisfy((array) => {\r",
+							"        return array.every(item => typeof item === 'string');\r",
+							"    });\r",
+							"\r",
+							"    // Check status\r",
+							"    pm.expect(responseBody.status).to.be.oneOf([\"uninitialized\", \"blocked\", \"error\", \"failed\", \"queued\", \"standby\", \"underway\", \"delayed\", \"skipped\", \"canceled\", \"killed\", \"completed\"]);\r",
+							"\r",
+							"    // Check currentLocationIndex\r",
+							"    pm.expect(responseBody.currentLocationIndex).to.be.a('number');\r",
+							"\r",
+							"    pm.expect(responseBody.travellingToIndex).to.satisfy((value) => {\r",
+							"    return value === null || typeof value === 'number';\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify response structure for status 422\", function () {\r",
+							"    pm.response.to.have.status(422);\r",
+							"\r",
+							"    var responseBody = pm.response.json();\r",
+							"\r",
+							"    // Define expected structure\r",
+							"    pm.expect(responseBody.detail).to.satisfy((array) => {\r",
+							"        if (!Array.isArray(array)) {\r",
+							"            return false;\r",
+							"        }\r",
+							"        return array.every(item => typeof item === 'object' &&\r",
+							"            item.loc && Array.isArray(item.loc) && item.loc.length === 2 &&\r",
+							"            typeof item.loc[0] === 'string' && typeof item.loc[1] === 'string' &&\r",
+							"            typeof item.msg === 'string' &&\r",
+							"            typeof item.type === 'string');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "<string>",
+						"description": "(Required) "
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/task_status/:task_id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"task_status",
+						":task_id"
+					],
+					"variable": [
+						{
+							"key": "task_id",
+							"value": "<string>",
+							"description": "(Required) "
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Successful Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/task_status/:task_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"task_status",
+								":task_id"
+							],
+							"variable": [
+								{
+									"key": "task_id",
+									"value": "<string>",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"taskId\": \"<string>\",\n  \"dateTime\": \"<dateTime>\",\n  \"robotId\": \"<string>\",\n  \"fleetId\": \"<string>\",\n  \"cartId\": \"<string>\",\n  \"destinations\": [\n    {\n      \"name\": \"<string>\",\n      \"action\": \"<string>\",\n      \"compartment\": \"<string>\"\n    },\n    {\n      \"name\": \"<string>\",\n      \"action\": \"<string>\",\n      \"compartment\": \"<string>\"\n    }\n  ],\n  \"authorizedDepartures\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"unauthorizedDepartures\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"status\": \"<string>\",\n  \"currentLocationIndex\": \"<integer>\",\n  \"travellingToIndex\": \"<integer>\"\n}"
+				},
+				{
+					"name": "Validation Error",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "<string>",
+								"description": "(Required) "
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/task_status/:task_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"task_status",
+								":task_id"
+							],
+							"variable": [
+								{
+									"key": "task_id",
+									"value": "<string>",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://smart_cart_api_server.tfk3s.ezey.link:38000",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}
