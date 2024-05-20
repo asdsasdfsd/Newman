@@ -32,4 +32,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/newman:${{github.sha}}
+          tags: ${{ secrets.DOCKER_USERNAME }}/newman:latest
