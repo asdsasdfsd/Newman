@@ -18,4 +18,5 @@ COPY my_collection.json .
 
 ENTRYPOINT ["sh", "-c", "newman run my_collection.json --env-var baseUrl=$BASE_URL $0 $@"]
 
+#
 CMD []
